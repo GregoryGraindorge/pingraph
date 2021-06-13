@@ -1,4 +1,20 @@
 #!/bin/bash
+function logo(){
+cat << "EOF"
+
+ _______  ______  __    __   ______   _______    ______   _______   __    __ 
+|       \|      \|  \  |  \ /      \ |       \  /      \ |       \ |  \  |  \
+| $$$$$$$\\$$$$$$| $$\ | $$|  $$$$$$\| $$$$$$$\|  $$$$$$\| $$$$$$$\| $$  | $$
+| $$__/ $$ | $$  | $$$\| $$| $$ __\$$| $$__| $$| $$__| $$| $$__/ $$| $$__| $$
+| $$    $$ | $$  | $$$$\ $$| $$|    \| $$    $$| $$    $$| $$    $$| $$    $$
+| $$$$$$$  | $$  | $$\$$ $$| $$ \$$$$| $$$$$$$\| $$$$$$$$| $$$$$$$ | $$$$$$$$
+| $$      _| $$_ | $$ \$$$$| $$__| $$| $$  | $$| $$  | $$| $$      | $$  | $$
+| $$     |   $$ \| $$  \$$$ \$$    $$| $$  | $$| $$  | $$| $$      | $$  | $$
+ \$$      \$$$$$$ \$$   \$$  \$$$$$$  \$$   \$$ \$$   \$$ \$$       \$$   \$$
+-----------------------------------------------------------------------------
+
+EOF
+}
 
 function Main_Install(){
 
@@ -39,13 +55,15 @@ function Force_Update(){
 
 function Help(){
 
-        printf "%s\n" "@@@@@@@@@"
-        printf "%s\n" "---------"
-        printf "%s\n" "TOOLGRAPH"
-        printf "%s\n" "---------"
-        printf "%s\n\n" "@@@@@@@@@"
-
-        printf "%b\n" "-c: Nombre de paquets à envoyer (Default: 100)" "-i: Installation basique" "-h: Show this menu" "-d: Dossier où stocker le graphique\n" "-u: Upgrade le système avant l'installation" "-f: Force l'update quand celle-ci ne fonctionnne pas correctement"
+        logo
+        printf "\t%s\n\n" "Pingraph est un outil qui permet de générer des graphiques sur base d'un ping test." \
+                        "Exemple: pingraph -c 10000 -d /root/myDir"
+        printf "\t%b\n"   "-c:\t Nombre de paquets à envoyer (Default: 100)" \
+                        "-i:\t Installation du tool" \
+                        "-h:\t Montre ce menu" \
+                        "-d:\t Dossier où stocker le graphique" \
+                        "-u:\t Upgrade le système avant l'installation" \
+                        "-f:\t Force l'upgrade\n"
         exit 1
 
 }
@@ -83,6 +101,7 @@ if [[ ! -n "$isInstall" ]]; then
         exit 1
 fi
 
+logo
 # Si l'utilisateur a fournit un nombre de paquet à envoyer, on modifie la variable $load
 [[ -n "$userLoad" ]] && load=$userLoad
 
@@ -135,7 +154,8 @@ graph $fileStat -o $fileGraph --figsize 1920x1080 \
                 --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" \
                 --no-tight --fontsize 12 --marker '' \
                 --yrange 0:$maxLat --xrange 0:$load && \
-                echo "Le fichier $fileGraph a été créé."
+                printf "\n%s\n" "Le fichier $fileGraph a bien été créé."
 
 # Suppression du fichier stat temporaire
 rm $fileStat
+
