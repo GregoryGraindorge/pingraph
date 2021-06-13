@@ -19,9 +19,13 @@ EOF
 function Main_Install(){
 
         # Check la version de Python
-        checkpythonversion=$(python -V | grep "3.7")
-        [[ -z "$checkpythonversion" ]] && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-        python -V
+        checkpythonversion=$(python -V | grep "3.[0-9]")
+        if [[ -n "$checkpythonversion" ]]; then 
+
+                getPythonVersion=$(find /usr/bin -name "python*" -not -type l 2>/dev/null | grep -o "3.[0-9]" | uniq)
+                [[ -n "$getPythonVersion" ]] && sudo update-alternatives --install /usr/bin/python python /usr/bin/python$getPythonVersion 1
+
+        fi
 
         tmp=/dev/pip-tmp && mkdir $tmp && tmpdir=$tmp
 
@@ -148,14 +152,13 @@ for i in $(seq $load)
 sleep 1
 
 # Création du graph
-echo "Création du graphique - Veuillez patienter..."
+printf "\n%s\n" "Création du graphique - Veuillez patienter..."
 graph $fileStat -o $fileGraph --figsize 1920x1080 \
                 --xlabel 'Paquets' --ylabel 'Time (ms)' \
                 --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" \
                 --no-tight --fontsize 12 --marker '' \
                 --yrange 0:$maxLat --xrange 0:$load && \
-                printf "\n%s\n" "Le fichier $fileGraph a bien été créé."
+                printf "\n%s\n\n" "Le fichier $fileGraph a bien été créé."
 
 # Suppression du fichier stat temporaire
 rm $fileStat
-
