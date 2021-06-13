@@ -20,7 +20,7 @@ function Main_Install(){
 
         # Check la version de Python
         checkpythonversion=$(python -V | grep "3.[0-9]")
-        if [[ -n "$checkpythonversion" ]]; then 
+        if [[ -z "$checkpythonversion" ]]; then 
 
                 getPythonVersion=$(find /usr/bin -name "python*" -not -type l 2>/dev/null | grep -o "3.[0-9]" | uniq)
                 [[ -n "$getPythonVersion" ]] && sudo update-alternatives --install /usr/bin/python python /usr/bin/python$getPythonVersion 1
