@@ -134,6 +134,7 @@ mdev=$(grep "rtt" $filePing | awk -F/ '{print $7}' | awk '{print $1}')
 
 latencyAsInt=$(echo $max | awk -F. '{print $1}')
 [[ $latencyAsInt -gt $maxLat  ]] && maxLat=$(($latencyAsInt+10))
+[[ $maxLat -lt $(($maxLat - $avg)) ]] maxLat=$(($maxLat+($maxLat/4)))
 
 # Création du fichier de statistiques temporaire
 echo "id,latency (min $min ms / max $max ms),average ($avg ms),jitter ($mdev ms)" > $fileStat
