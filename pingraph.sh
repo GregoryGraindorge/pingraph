@@ -2,24 +2,23 @@
 
 function Main_Install(){
 
-        # Installation du tool
-        checkPythonVersion=$(python -V | grep "3.7")
-        [[ -z "$checkPythonVersion" ]] && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-        python -V
+        # Check la version de Python
+        checkpythonversion=$(python -v | grep "3.7")
+        [[ -z "$checkpythonversion" ]] && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+        python -v
 
-        tmp=/dev/pip-tmp
-        mkdir $tmp
+        tmp=/dev/pip-tmp && mkdir $tmp && tmpdir=$tmp
 
-        TMPDIR=$tmp
         sudo apt update && \
         sudo apt install python3-pip -y
         pip3 install graph-cli --cache-dir=$tmp --build $tmp
 
+        sudo apt install libatlas-base-dev libopenjp2-7 -y && sudo apt autoremove -y
+
+        symlnk=/bin/pingraph
+        [[ ! -f "$symlnk" ]] && ln -s /opt/pingraph/pingraph.sh $symlnk
+
         graph --help
-
-        sudo apt install libatlas-base-dev libopenjp2-7 -y && sudo apt autoremove
-
-        mkdir ~/pingraph && cd $_
 
 }
 
@@ -51,7 +50,6 @@ function Help(){
 
 }
 
-
 ## ------------------------------- ##
 # Lancement du tool
 ## ------------------------------- ##
@@ -77,11 +75,19 @@ done
 
 sleep 1
 
+# Check si Graph est bien installé dans le système
+isInstall=$(which graph)
+if [[ ! -n "$isInstall" ]]; then
+        echo "Veuillez d'abord installé le tool avec la commande \"pingraph -i\"" 
+        echo "Help: \"pingraph -h\"" 
+        exit 1
+fi
+
 # Si l'utilisateur a fournit un nombre de paquet à envoyer, on modifie la variable $load
 [[ -n "$userLoad" ]] && load=$userLoad
 
 timestampHR=$(date +"%Y.%m.%d - %Hh%M")
-timestampFile=$(date +"%Y.%m.%d - %Hh%M")
+timestampFile=$(date +"%Y.%m.%d-%Hh%M")
 timestampStart=$(date --date now +%s)
 
 filePing="ping-test-"$timestampFile # Output pour les ping
@@ -89,7 +95,6 @@ fileStat="ping-stat.csv" # Fichier temporaire pour extraire les infos des ping
 fileGraph=$outputPath/"ping-graph-$timestampFile.png" # Output du graph
 
 maxLat=60 # Latence maximum pour le graph
-
 sudo ping mytelephony.beonevoip.be -i 0.02 -s 216 -c $load | tee $filePing
 
 # Extraction des infos du fichier ping
@@ -124,7 +129,13 @@ for i in $(seq $load)
 sleep 1
 
 # Création du graph
-graph $fileStat -o $fileGraph --figsize 1920x1080 --xlabel 'Paquets' --ylabel 'Time (ms)' --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" --no-tight --fontsize 12 --marker '' --yrange 0:$maxLat --xrange 0:$load
+echo "Création du graphique - Veuillez patienter..."
+graph $fileStat -o $fileGraph --figsize 1920x1080 \
+                --xlabel 'Paquets' --ylabel 'Time (ms)' \
+                --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" \
+                --no-tight --fontsize 12 --marker '' \
+                --yrange 0:$maxLat --xrange 0:$load && \
+                echo "Le fichier $fileGraph a été créé."
 
 # Suppression du fichier stat temporaire
 rm $fileStat
