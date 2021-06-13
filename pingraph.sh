@@ -62,12 +62,12 @@ function Help(){
         logo
         printf "\t%s\n\n" "Pingraph est un outil qui permet de générer des graphiques sur base d'un ping test." \
                         "Exemple: pingraph -c 10000 -d /root/myDir"
-        printf "\t%b\n"   "-c:\t Nombre de paquets à envoyer (Default: 100)" \
-                        "-i:\t Installation du tool" \
-                        "-h:\t Montre ce menu" \
-                        "-d:\t Dossier où stocker le graphique" \
-                        "-u:\t Upgrade le système avant l'installation" \
-                        "-f:\t Force l'upgrade\n"
+        printf "\t%b\n"   "-c,\t Nombre de paquets à envoyer (Default: 100)" \
+                        "-i,\t Installation du tool" \
+                        "-h,\t Montre ce menu" \
+                        "-d,\t Dossier où stocker le graphique" \
+                        "-u,\t Upgrade le système avant l'installation" \
+                        "-f,\t Force l'upgrade\n"
         exit 1
 
 }
@@ -75,8 +75,6 @@ function Help(){
 ## ------------------------------- ##
 # Lancement du tool
 ## ------------------------------- ##
-outputPath="." # Chemin pour le stockage du graph.
-load=100 # Nombre de paquets à envoyer par défaut.
 
 # Check flags
 while getopts ic:hd:uf flag
@@ -99,13 +97,17 @@ sleep 1
 
 # Check si Graph est bien installé dans le système
 isInstall=$(which graph)
-if [[ ! -n "$isInstall" ]]; then
+if [[ -z "$isInstall" ]]; then
         echo "Veuillez d'abord installé le tool avec la commande \"pingraph -i\"" 
         echo "Help: \"pingraph -h\"" 
         exit 1
 fi
 
 logo
+
+outputPath="." # Chemin pour le stockage du graph.
+load=100 # Nombre de paquets à envoyer par défaut.
+
 # Si l'utilisateur a fournit un nombre de paquet à envoyer, on modifie la variable $load
 [[ -n "$userLoad" ]] && load=$userLoad
 
@@ -117,8 +119,12 @@ filePing="ping-test-"$timestampFile # Output pour les ping
 fileStat="ping-stat.csv" # Fichier temporaire pour extraire les infos des ping
 fileGraph=$outputPath/"ping-graph-$timestampFile.png" # Output du graph
 
-maxLat=60 # Latence maximum pour le graph
+maxLat=50 # Latence maximum pour le graph
+
+# Lancement du ping test
 sudo ping mytelephony.beonevoip.be -i 0.02 -s 216 -c $load | tee $filePing
+
+printf "\n%s\n" "Extraction des statistiques pour la création du graphique."
 
 # Extraction des infos du fichier ping
 min=$(grep "rtt" $filePing | awk -F/ '{print $4}' | awk '{print $3}')
@@ -127,9 +133,9 @@ avg=$(grep "rtt" $filePing | awk -F/ '{print $5}')
 mdev=$(grep "rtt" $filePing | awk -F/ '{print $7}' | awk '{print $1}')
 
 latencyAsInt=$(echo $max | awk -F. '{print $1}')
-[[ $latencyAsInt -gt $maxLat  ]] && maxLat=$latencyAsInt
+[[ $latencyAsInt -gt $maxLat  ]] && maxLat=$(($latencyAsInt+10))
 
-# Création du fichier stat temporaire
+# Création du fichier de statistiques temporaire
 echo "id,latency (min $min ms / max $max ms),average ($avg ms),jitter ($mdev ms)" > $fileStat
 
 # Définition des informations nécessaire pour créer le graph
@@ -160,5 +166,5 @@ graph $fileStat -o $fileGraph --figsize 1920x1080 \
                 --yrange 0:$maxLat --xrange 0:$load && \
                 printf "\n%s\n\n" "Le fichier $fileGraph a bien été créé."
 
-# Suppression du fichier stat temporaire
+# Suppression du fichier de statistiques temporaire
 rm $fileStat
