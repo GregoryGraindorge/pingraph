@@ -3,9 +3,9 @@
 function Main_Install(){
 
         # Check la version de Python
-        checkpythonversion=$(python -v | grep "3.7")
+        checkpythonversion=$(python -V | grep "3.7")
         [[ -z "$checkpythonversion" ]] && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-        python -v
+        python -V
 
         tmp=/dev/pip-tmp && mkdir $tmp && tmpdir=$tmp
 
