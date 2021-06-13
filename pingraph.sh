@@ -132,6 +132,7 @@ avg=$(grep "rtt" $filePing | awk -F/ '{print $5}')
 mdev=$(grep "rtt" $filePing | awk -F/ '{print $7}' | awk '{print $1}')
 
 latencyAsInt=$(echo $max | awk -F. '{print $1}')
+avgAsInt=$(echo $avg | awk -F. '{print $1}')
 [[ $latencyAsInt -gt $maxLat  ]] && maxLat=$(($latencyAsInt+10))
 [[ $(($maxLat - $avgAsInt)) -lt $avgAsInt ]] && maxLat=$(($maxLat+($maxLat/4)))
 
