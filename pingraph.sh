@@ -38,7 +38,11 @@ function Main_Install(){
         symlnk=/bin/pingraph
         [[ ! -f "$symlnk" ]] && ln -s /opt/pingraph/pingraph.sh $symlnk
 
-        graph --help
+        logo
+
+        printf "%s\n" "Installation terminée. Utilisez la commande \"pingraph -h\" pour obtenir de l'aide."
+
+        exit 1
 
 }
 
@@ -65,7 +69,7 @@ function Help(){
         printf "\t%b\n"   "-c,\t Nombre de paquets à envoyer (Default: 100)" \
                         "-i,\t Installation du tool" \
                         "-h,\t Montre ce menu" \
-                        "-d,\t Dossier où stocker le graphique" \
+                        "-d,\t Dossier où stocker le graphique (Default: Dossier actuel)" \
                         "-u,\t Upgrade le système avant l'installation" \
                         "-f,\t Force l'upgrade\n"
         exit 1
