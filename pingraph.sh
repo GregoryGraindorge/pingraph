@@ -27,7 +27,7 @@ function Main_Install(){
 
         fi
 
-        tmp=/dev/pip-tmp && mkdir $tmp && tmpdir=$tmp
+        tmp=/dev/pip-tmp && sudo mkdir $tmp && chmod a+w $tmp && tmpdir=$tmp
 
         sudo apt update && \
         sudo apt install python3-pip -y
@@ -36,11 +36,11 @@ function Main_Install(){
         sudo apt install libatlas-base-dev libopenjp2-7 -y && sudo apt autoremove -y
 
         symlnk=/bin/pingraph
-        [[ ! -f "$symlnk" ]] && ln -s /opt/pingraph/pingraph.sh $symlnk
+        [[ ! -f "$symlnk" ]] && sudo ln -s /opt/pingraph/pingraph.sh $symlnk
 
         logo
 
-        printf "\n%s\n\n" "Installation terminée.\n Utilisez la commande \"pingraph -h\" pour obtenir de l'aide."
+        printf "\n%s\n\n" "Installation terminée. Utilisez la commande \"pingraph -h\" pour obtenir de l'aide."
 
         exit 1
 
