@@ -40,7 +40,7 @@ function Main_Install(){
 
         logo
 
-        printf "%s\n" "Installation terminée. Utilisez la commande \"pingraph -h\" pour obtenir de l'aide."
+        printf "\n%s\n\n" "Installation terminée.\n Utilisez la commande \"pingraph -h\" pour obtenir de l'aide."
 
         exit 1
 
