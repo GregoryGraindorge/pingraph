@@ -75,6 +75,9 @@ function Help(){
 ## ------------------------------- ##
 # Lancement du tool
 ## ------------------------------- ##
+outputPath="." # Chemin pour le stockage du graph.
+load=100 # Nombre de paquets à envoyer par défaut.
+
 # Check flags
 while getopts ic:hd:uf flag
 do
@@ -103,9 +106,6 @@ if [[ -z "$isInstall" ]]; then
 fi
 
 logo
-
-outputPath="." # Chemin pour le stockage du graph.
-load=100 # Nombre de paquets à envoyer par défaut.
 
 # Si l'utilisateur a fournit un nombre de paquet à envoyer, on modifie la variable $load
 [[ -n "$userLoad" ]] && load=$userLoad
