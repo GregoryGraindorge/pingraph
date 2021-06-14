@@ -76,6 +76,18 @@ function Help(){
 
 }
 
+function customPath(){
+
+        if [[ ! -d "$1" ]]; then
+
+                printf "\n\n%s\n\n" "Ce répertoire n'existe pas. Veuillez entrer un répertoire valide."
+                exit 1
+
+        fi
+
+        outputPath=$(echo $1 | sed 's/\/$//g')
+
+}
 ## ------------------------------- ##
 # Lancement du tool
 ## ------------------------------- ##
@@ -88,7 +100,7 @@ do
         case "${flag}" in
                 h) Help;;
                 c) userLoad=${OPTARG};;
-                d) outputPath=${OPTARG};;
+                d) customPath ${OPTARG};;
                 i) install=true;;
                 u) upgrade=true;;
                 f) force=true;;
