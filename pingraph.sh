@@ -27,7 +27,8 @@ function Main_Install(){
 
         fi
 
-        tmp=/dev/pip-tmp && sudo mkdir $tmp && chmod a+w $tmp && tmpdir=$tmp
+        tmp=/dev/pip-tmp && sudo mkdir $tmp && chmod a+w $tmp
+        export TMPDIR=$tmp
 
         sudo apt update && \
         sudo apt install python3-pip -y
