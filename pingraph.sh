@@ -27,12 +27,11 @@ function Main_Install(){
 
         fi
 
-        tmp=/dev/pip-tmp && sudo mkdir $tmp && chmod a+w $tmp
-        export TMPDIR=$tmp
+        tmp=/dev/pip-tmp && sudo mkdir $tmp && chmod a+w $tmp && tmpdir=$tmp
 
         sudo apt update && \
         sudo apt install python3-pip -y
-        pip3 install graph-cli --cache-dir=$tmp --build $tmp --target $1
+        pip3 install graph-cli --cache-dir=$tmp --build $tmp
 
         sudo apt install libatlas-base-dev libopenjp2-7 -y && sudo apt autoremove -y
 
@@ -94,7 +93,6 @@ function customPath(){
 ## ------------------------------- ##
 outputPath="." # Chemin pour le stockage du graph.
 load=100 # Nombre de paquets à envoyer par défaut.
-installPath="/opt/pingraph/"
 
 # Check flags
 while getopts ic:hd:uf flag
@@ -111,13 +109,14 @@ done
 
 [[ -n "$force" ]] && Force_Update # Force la mise à jour du raspbery si besoin
 [[ -n "$upgrade" ]] && Uprade_Sys # Mise à jour du raspberry
-[[ -n "$install" ]] && Main_Install $installPath # Installation de l'outil graph-cli via pip
+[[ -n "$install" ]] && Main_Install # Installation de l'outil graph-cli via pip
 
 sleep 1
 
 # Check si Graph est bien installé dans le système
-if [[ ! -f $installPath"bin/graph" ]]; then
-        echo "Veuillez d'abord installer le tool avec la commande \"pingraph -i\"" 
+isInstall=$(which graph)
+if [[ -z "$isInstall" ]]; then
+        echo "Veuillez d'abord installé le tool avec la commande \"pingraph -i\"" 
         echo "Help: \"pingraph -h\"" 
         exit 1
 fi
@@ -177,7 +176,7 @@ sleep 1
 
 # Création du graph
 printf "\n%s\n" "Création du graphique - Veuillez patienter..."
-$installPath"bin/graph" $fileStat -o $fileGraph --figsize 1920x1080 \
+graph $fileStat -o $fileGraph --figsize 1920x1080 \
                 --xlabel 'Paquets' --ylabel 'Time (ms)' \
                 --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" \
                 --no-tight --fontsize 12 --marker '' \
