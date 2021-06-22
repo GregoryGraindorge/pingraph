@@ -71,7 +71,7 @@ function Help(){
                         "-h,\t Montre ce menu" \
                         "-d,\t Dossier où stocker le graphique (Default: Dossier actuel)" \
                         "-u,\t Upgrade le système avant l'installation" \
-                        "-f,\t Force l'upgrade\n" \
+                        "-f,\t Force l'upgrade" \
                         "-t,\t Target \n"
         exit 1
 
@@ -97,7 +97,7 @@ load=100 # Nombre de paquets à envoyer par défaut.
 target="mytelephony.beonevoip.be"
 
 # Check flags
-while getopts ic:hd:uf flag
+while getopts it:c:hd:uf flag
 do
         case "${flag}" in
                 h) Help;;
