@@ -71,7 +71,8 @@ function Help(){
                         "-h,\t Montre ce menu" \
                         "-d,\t Dossier où stocker le graphique (Default: Dossier actuel)" \
                         "-u,\t Upgrade le système avant l'installation" \
-                        "-f,\t Force l'upgrade\n"
+                        "-f,\t Force l'upgrade\n" \
+                        "-t,\t Target \n"
         exit 1
 
 }
@@ -93,6 +94,7 @@ function customPath(){
 ## ------------------------------- ##
 outputPath="." # Chemin pour le stockage du graph.
 load=100 # Nombre de paquets à envoyer par défaut.
+target="mytelephony.beonevoip.be"
 
 # Check flags
 while getopts ic:hd:uf flag
@@ -104,6 +106,7 @@ do
                 i) install=true;;
                 u) upgrade=true;;
                 f) force=true;;
+                t) target=${OPTARG};;
         esac
 done
 
@@ -137,7 +140,7 @@ fileGraph=$outputPath/"ping-graph-$timestampFile.png" # Output du graph
 maxLat=50 # Latence maximum pour le graph
 
 # Lancement du ping test
-sudo ping mytelephony.beonevoip.be -i 0.02 -s 216 -c $load | tee $filePing
+sudo ping $target -i 0.02 -s 216 -c $load | tee $filePing
 
 printf "\n%s\n" "Extraction des statistiques pour la création du graphique."
 
