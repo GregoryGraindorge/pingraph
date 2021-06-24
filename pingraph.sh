@@ -137,7 +137,7 @@ filePing="ping-test-"$timestampFile # Output pour les ping
 fileStat="ping-stat.csv" # Fichier temporaire pour extraire les infos des ping
 fileGraph=$outputPath/"ping-graph-$timestampFile.png" # Output du graph
 
-maxLat=50 # Latence maximum pour le graph
+#maxLat=50 # Latence maximum pour le graph
 
 # Lancement du ping test
 sudo ping $target -i 0.02 -s 216 -c $load | tee $filePing
@@ -152,8 +152,10 @@ mdev=$(grep "rtt" $filePing | awk -F/ '{print $7}' | awk '{print $1}')
 
 latencyAsInt=$(echo $max | awk -F. '{print $1}')
 avgAsInt=$(echo $avg | awk -F. '{print $1}')
-[[ $latencyAsInt -gt $maxLat  ]] && maxLat=$(($latencyAsInt+10))
-[[ $(($maxLat - $avgAsInt)) -lt $avgAsInt ]] && maxLat=$(($maxLat+($maxLat/4)))
+maxAsInt=$(echo $max | awk -F. '{print $1}')
+#[[ $latencyAsInt -gt $maxLat  ]] && maxLat=$(($latencyAsInt+10))
+#[[ $(($maxLat - $avgAsInt)) -lt $avgAsInt ]] && maxLat=$(($maxLat+($maxLat/4)))
+maxLat=$(($maxAsInt + 10))
 
 # Création du fichier de statistiques temporaire
 echo "id,latency (min $min ms / max $max ms),average ($avg ms),jitter ($mdev ms)" > $fileStat
@@ -181,7 +183,7 @@ sleep 1
 printf "\n%s\n" "Création du graphique - Veuillez patienter..."
 graph $fileStat -o $fileGraph --figsize 1920x1080 \
                 --xlabel 'Paquets' --ylabel 'Time (ms)' \
-                --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec)" \
+                --title "Ping Test $timestampHR (duration: $durationMin min, $durationSec sec) - Target: $target" \
                 --no-tight --fontsize 12 --marker '' \
                 --yrange 0:$maxLat --xrange 0:$load && \
                 printf "\n%s\n\n" "Le fichier $fileGraph a bien été créé."
